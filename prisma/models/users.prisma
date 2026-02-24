@@ -1,0 +1,14 @@
+model User {
+    id        Int       @id @default(autoincrement())
+    email     String    @unique
+    name      String
+    password  String
+    role      Role      @default(PLAYER)
+    createdAt DateTime  @default(now())
+    sessions  Session[]
+}
+
+enum Role {
+    GM
+    PLAYER
+}
