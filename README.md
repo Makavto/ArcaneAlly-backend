@@ -1,78 +1,60 @@
-# ArcaneAlly-backend
-backend for dnd companion app
+# ArcaneAlly — backend
 
-## Description
+API и серверная логика веб-приложения-компаньона для настольных RPG (D&D и др.): общие инструменты для кампании (карты, журнал, инвентарь, достижения) с синхронизацией в реальном времени.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Стек
 
-## Project setup
+NestJS (TypeScript), Prisma, PostgreSQL, JWT (access/refresh) + Passport, Socket.io, Swagger на `/api`.
 
-```bash
-$ npm install
+## Запуск
+
+Установка зависимостей: `npm install`. Требуется PostgreSQL. В корне необходимо создать `.env`:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/arcaneally"
+PORT=3000
+JWT_ACCESS_SECRET=...
+JWT_REFRESH_SECRET=...
 ```
 
-## Compile and run the project
+Опционально: `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN` (по умолчанию 15m, 7d).
 
-```bash
-# development
-$ npm run start
+- Миграции: `npx prisma migrate dev`
+- Запуск: `npm run start:dev` (watch) или `npm run start`
+- Порт по умолчанию — 3000
+- Документация API: `http://localhost:3000/api`
 
-# watch mode
-$ npm run start:dev
+## Состояние проекта
 
-# production mode
-$ npm run start:prod
-```
+**Реализовано:**
 
-## Run tests
+- регистрация и аутентификация
+- роли Player/GM
+- CRUD пользователей, JWT, пагинация
+- заготовки под кампании и сессии
 
-```bash
-# unit tests
-$ npm run test
+**В планах:**
 
-# e2e tests
-$ npm run test:e2e
+- кампании и приглашения игроков
+- журнал приключений
+- карты (несколько на кампанию, активная карта, области и метки с видимостью)
+- инвентарь и листы персонажей по игроку в кампании
+- достижения (личные/групповые), выдаваемые ГМом
+- WebSockets — синхронизация по комнатам кампаний
 
-# test coverage
-$ npm run test:cov
-```
+## Скрипты
 
-## Deployment
+| Команда | Назначение |
+|--------|------------|
+| `npm run start` | Запуск |
+| `npm run start:dev` | Режим разработки (watch) |
+| `npm run start:prod` | Продакшен |
+| `npm run build` | Сборка |
+| `npm run test` / `npm run test:e2e` | Юнит- и E2E-тесты |
+| `npm run lint` / `npm run format` | ESLint, Prettier |
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+## Роли
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+**GM:** создание кампаний, загрузка карт, журнал, выдача достижений, области и метки на карте, управление инвентарём и листами персонажей игроков; полный доступ к данным кампании.
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+**Player:** вход в кампанию по приглашению; доступ к своему инвентарю, листу персонажа, журналу, открытым областям активной карты, достижениям; редактирование инвентаря и листа (если не заблокировано ГМом).
