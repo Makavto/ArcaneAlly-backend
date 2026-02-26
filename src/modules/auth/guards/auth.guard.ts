@@ -7,10 +7,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from './auth-roles.decorator';
+import { ROLES_KEY } from '../decorators/auth-roles.decorator';
 import { Role } from '@prisma/client';
-import { TokenPayload } from './interfaces/token-payload.interface';
-import { TokenType } from './interfaces/token-types.enum';
+import { TokenPayload } from '../interfaces/token-payload.interface';
+import { TokenType } from '../interfaces/token-types.enum';
+import { AuthenticatedRequest } from 'src/shared/types/authenticated-request.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -19,7 +20,7 @@ export class AuthGuard implements CanActivate {
     private reflector: Reflector,
   ) {}
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  canActivate(context: ExecutionContext): boolean {
     try {
       const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
         ROLES_KEY,
@@ -28,8 +29,17 @@ export class AuthGuard implements CanActivate {
       if (!requiredRoles) {
         return true;
       }
-      const req = context.switchToHttp().getRequest();
-      const authHeader = req.headers.authorization;
+      const req = context.switchToHttp().getRequest<AuthenticatedRequest>();
+      if (
+        !req.headers['authorization'] ||
+        typeof req.headers['authorization'] !== 'string'
+      ) {
+        throw new UnauthorizedException({
+          message: 'Пользователь не авторизован',
+        });
+      }
+      const authHeader = req.headers['authorization'];
+
       const bearer = authHeader.split(' ')[0];
       const token = authHeader.split(' ')[1];
 

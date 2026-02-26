@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role, User } from '@prisma/client';
+import { UserType } from 'src/shared/types/user.type';
 
-export class UserResponseDto {
+export class UserResponseDto implements UserType {
   @ApiProperty({ description: 'ID пользователя', example: 1 })
   id: number;
 

@@ -6,14 +6,15 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from 'src/modules/users/services/users.service';
 import { PrismaService } from 'prisma/prisma.service';
-import { LoginRequestDto } from './dto/login-request.dto';
-import { TokensResponseDto } from './dto/tokens-response.dto';
-import { User } from '@prisma/client';
-import { UserResponseDto } from 'src/users/dto/user-response.dto';
-import { TokenPayload } from './interfaces/token-payload.interface';
-import { TokenType } from './interfaces/token-types.enum';
+import { LoginRequestDto } from '../dto/login-request.dto';
+import { TokensResponseDto } from '../dto/tokens-response.dto';
+import { TokenPayload } from '../interfaces/token-payload.interface';
+import { TokenType } from '../interfaces/token-types.enum';
+import { RegisterRequestDto } from '../dto/register-request.dto';
+import { UserType } from 'src/shared/types/user.type';
+import { RegisterResponseDto } from '../dto/register-response.dto';
 
 const ACCESS_EXPIRES_IN = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
 const REFRESH_EXPIRES_IN = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
@@ -44,7 +45,9 @@ export class AuthService {
   ) {}
 
   async login(dto: LoginRequestDto): Promise<TokensResponseDto> {
-    const user = await this.userService.findByEmail(dto.email);
+    const user = await this.prisma.user.findUnique({
+      where: { email: dto.email },
+    });
     if (!user) {
       throw new UnauthorizedException('Неверный email или пароль');
     }
@@ -53,6 +56,12 @@ export class AuthService {
       throw new UnauthorizedException('Неверный email или пароль');
     }
     return this.issueTokenPair(user);
+  }
+
+  async register(dto: RegisterRequestDto): Promise<RegisterResponseDto> {
+    const user = await this.userService.create(dto);
+    const tokens = await this.issueTokenPair(user);
+    return new RegisterResponseDto(tokens, user);
   }
 
   async refresh(refreshToken: string): Promise<TokensResponseDto> {
@@ -97,8 +106,8 @@ export class AuthService {
     return { message: 'Выход выполнен' };
   }
 
-  private async issueTokenPair(user: User): Promise<TokensResponseDto> {
-    const userPayload = new UserResponseDto(user);
+  private async issueTokenPair(user: UserType): Promise<TokensResponseDto> {
+    const userPayload = user;
     const accessPayload: TokenPayload = {
       type: TokenType.ACCESS,
       user: userPayload,

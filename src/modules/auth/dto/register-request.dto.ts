@@ -1,14 +1,14 @@
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  MinLength,
-} from 'class-validator';
-import { Role } from '@prisma/client';
 import { ApiProperty } from '@nestjs/swagger';
+import { Role } from '@prisma/client';
+import {
+  IsNotEmpty,
+  IsEmail,
+  MinLength,
+  IsOptional,
+  IsEnum,
+} from 'class-validator';
 
-export class CreateUserDto {
+export class RegisterRequestDto {
   @ApiProperty({ description: 'Имя пользователя', example: 'John Doe' })
   @IsNotEmpty()
   name: string;
