@@ -1,0 +1,12 @@
+model Campaign {
+    id             Int              @id @default(autoincrement())
+    name           String
+    description    String?
+    isActive       Boolean          @default(true)
+    invitationCode String           @unique @default(uuid())
+    gm             User             @relation(fields: [gmId], references: [id])
+    gmId           Int
+    players        CampaignPlayer[]
+    createdAt      DateTime         @default(now())
+    updatedAt      DateTime         @updatedAt
+}

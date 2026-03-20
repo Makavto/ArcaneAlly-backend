@@ -32,7 +32,6 @@ export class UsersService {
         email: dto.email,
         name: dto.name,
         password: hashedPassword,
-        role: dto.role,
       },
     });
 
@@ -69,6 +68,9 @@ export class UsersService {
     const users = await this.prisma.user.findMany({
       skip: (page - 1) * limit,
       take: limit,
+      include: {
+        campaignsAsPlayer: true,
+      },
     });
     const total = await this.prisma.user.count();
     return new PaginationResponseDto(

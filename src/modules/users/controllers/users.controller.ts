@@ -19,8 +19,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { UserResponseDto } from '../dto/user-response.dto';
-import { Roles } from 'src/modules/auth/decorators/auth-roles.decorator';
-import { Role } from '@prisma/client';
 import { AuthGuard } from 'src/modules/auth/guards/auth.guard';
 import { PaginationRequestDto } from 'src/shared/dtos/pagination-request.dto';
 import { PaginationResponse } from 'src/shared/decorators/pagination-response.decorator';
@@ -56,7 +54,6 @@ export class UsersController {
     description: 'Пользователи успешно получены',
   })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async findAll(
     @Query() query: PaginationRequestDto,
@@ -79,7 +76,6 @@ export class UsersController {
     description: 'Пользователь не найден',
   })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async findMe() {
     return this.usersService.findById(2);
@@ -97,7 +93,6 @@ export class UsersController {
     description: 'Пользователь не найден',
   })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async update(@Body() dto: UpdateUserDto, @Req() req: AuthenticatedRequest) {
     return this.usersService.update(req.user.id, dto);
@@ -116,7 +111,6 @@ export class UsersController {
     description: 'Пользователь не найден',
   })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async findById(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findById(id);

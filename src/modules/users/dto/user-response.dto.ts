@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role, User } from '@prisma/client';
+import { User } from '@prisma/client';
 import { UserType } from 'src/shared/types/user.type';
 
 export class UserResponseDto implements UserType {
@@ -15,9 +15,6 @@ export class UserResponseDto implements UserType {
   })
   email: string;
 
-  @ApiProperty({ description: 'Роль пользователя', example: Role.PLAYER })
-  role: Role;
-
   @ApiProperty({
     description: 'Дата создания пользователя',
     example: '2021-01-01T00:00:00.000Z',
@@ -28,7 +25,6 @@ export class UserResponseDto implements UserType {
     this.id = user.id;
     this.name = user.name;
     this.email = user.email;
-    this.role = user.role;
     this.createdAt = user.createdAt;
   }
 }

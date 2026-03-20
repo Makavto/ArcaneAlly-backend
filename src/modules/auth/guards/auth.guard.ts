@@ -6,29 +6,16 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators/auth-roles.decorator';
-import { Role } from '@prisma/client';
 import { TokenPayload } from '../interfaces/token-payload.interface';
 import { TokenType } from '../interfaces/token-types.enum';
 import { AuthenticatedRequest } from 'src/shared/types/authenticated-request.type';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(
-    private jwtService: JwtService,
-    private reflector: Reflector,
-  ) {}
+  constructor(private jwtService: JwtService) {}
 
   canActivate(context: ExecutionContext): boolean {
     try {
-      const requiredRoles = this.reflector.getAllAndOverride<Role[]>(
-        ROLES_KEY,
-        [context.getHandler(), context.getClass()],
-      );
-      if (!requiredRoles) {
-        return true;
-      }
       const req = context.switchToHttp().getRequest<AuthenticatedRequest>();
       if (
         !req.headers['authorization'] ||
@@ -59,7 +46,7 @@ export class AuthGuard implements CanActivate {
       }
       const user = payload.user;
       req.user = user;
-      return requiredRoles.includes(user.role);
+      return true;
     } catch (e) {
       console.log(e);
       throw new ForbiddenException('Нет доступа');

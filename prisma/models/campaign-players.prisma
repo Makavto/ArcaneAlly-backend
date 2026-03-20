@@ -1,0 +1,10 @@
+model CampaignPlayer {
+    id            Int      @id @default(autoincrement())
+    campaign      Campaign @relation(fields: [campaignId], references: [id])
+    campaignId    Int
+    user          User     @relation(fields: [userId], references: [id])
+    userId        Int
+    characterName String
+    createdAt     DateTime @default(now())
+    updatedAt     DateTime @updatedAt
+}

@@ -12,8 +12,6 @@ import { TokensResponseDto } from '../dto/tokens-response.dto';
 import { RegisterResponseDto } from '../dto/register-response.dto';
 import { RegisterRequestDto } from '../dto/register-request.dto';
 import { AuthGuard } from '../guards/auth.guard';
-import { Roles } from '../decorators/auth-roles.decorator';
-import { Role } from '@prisma/client';
 
 @ApiTags('Авторизация')
 @Controller('auth')
@@ -57,7 +55,6 @@ export class AuthController {
   })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async refresh(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.refresh(dto.refreshToken);
@@ -68,7 +65,6 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'Выход выполнен' })
   @ApiResponse({ status: 400, description: 'Ошибка валидации' })
   @ApiBearerAuth()
-  @Roles(Role.PLAYER)
   @UseGuards(AuthGuard)
   async logout(@Body() dto: RefreshTokenRequestDto) {
     return this.authService.logout(dto.refreshToken);
